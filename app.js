@@ -2,6 +2,12 @@ import * as pdfjsLib from "./lib/pdf.min.mjs";
 
 import { PDFDocument, rgb } from "./lib/pdf-lib.esm.js";
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js");
+  });
+}
+
 // ============================================================
 // PDF.JS WORKER
 // ============================================================
