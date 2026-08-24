@@ -1,0 +1,936 @@
+/* =========================================================
+   TUTORIAL OVERLAY
+========================================================= */
+
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 224, 138, 0.16),
+      transparent 30%
+    ),
+    rgba(25, 28, 35, 0.72);
+
+  backdrop-filter: blur(7px);
+}
+
+.tutorial-overlay.show {
+  display: flex;
+}
+
+/* =========================================================
+   WINDOW
+========================================================= */
+
+.tutorial-window {
+  position: relative;
+
+  width: min(940px, 100%);
+  max-height: 94vh;
+
+  overflow-y: auto;
+
+  padding: 34px;
+
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.96),
+    rgba(255, 253, 247, 0.98)
+  );
+
+  border: 3px solid #252833;
+
+  border-radius: 24px;
+
+  box-shadow:
+    8px 10px 0 #252833,
+    0 25px 70px rgba(0, 0, 0, 0.25);
+
+  transform: rotate(-0.25deg);
+
+  animation: tutorialPop 0.3s ease;
+}
+
+@keyframes tutorialPop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) rotate(-1deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-0.25deg);
+  }
+}
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+.tutorial-close {
+  position: absolute;
+
+  top: 14px;
+  right: 16px;
+
+  width: 42px;
+  height: 42px;
+
+  border: 2px solid #252833;
+  border-radius: 50%;
+
+  background: #fff;
+
+  font-size: 28px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  box-shadow: 3px 3px 0 #252833;
+
+  transition: 0.15s;
+}
+
+.tutorial-close:hover {
+  transform: rotate(8deg) scale(1.08);
+
+  background: #ffe58f;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.tutorial-header {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  margin-bottom: 24px;
+}
+
+.tutorial-sparkle {
+  display: grid;
+  place-items: center;
+
+  width: 64px;
+  height: 64px;
+
+  background: #ffe58f;
+
+  border: 3px solid #252833;
+
+  border-radius: 18px;
+
+  font-size: 34px;
+
+  transform: rotate(-7deg);
+
+  box-shadow: 4px 5px 0 #252833;
+}
+
+.tutorial-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 2px;
+
+  color: #e45858;
+}
+
+.tutorial-header h2 {
+  margin: 2px 0 3px;
+
+  font-size: 31px;
+
+  color: #252833;
+}
+
+.tutorial-header p {
+  margin: 0;
+
+  color: #6b707b;
+}
+
+/* =========================================================
+   SIZE BUTTONS
+========================================================= */
+
+.tutorial-size-selector {
+  display: flex;
+  gap: 10px;
+
+  margin-bottom: 22px;
+}
+
+.tutorial-size {
+  flex: 1;
+
+  min-height: 62px;
+
+  border: 2px solid #252833;
+  border-radius: 14px;
+
+  background: white;
+
+  cursor: pointer;
+
+  font-size: 21px;
+  font-weight: 900;
+
+  color: #252833;
+
+  box-shadow: 3px 4px 0 #252833;
+
+  transition: 0.15s;
+}
+
+.tutorial-size small {
+  display: block;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #777;
+}
+
+.tutorial-size:hover {
+  transform: translateY(-2px);
+}
+
+.tutorial-size.active {
+  background: #8ee7cf;
+
+  transform: translate(2px, 3px);
+
+  box-shadow: 1px 1px 0 #252833;
+}
+
+/* =========================================================
+   STEP HEADER
+========================================================= */
+
+.tutorial-step {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  margin-bottom: 16px;
+}
+
+.tutorial-step-number {
+  display: grid;
+  place-items: center;
+
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 38px;
+
+  border-radius: 50%;
+
+  background: #ff8f8f;
+
+  border: 2px solid #252833;
+
+  font-weight: 900;
+
+  box-shadow: 2px 3px 0 #252833;
+}
+
+.tutorial-step-text strong {
+  display: block;
+
+  font-size: 17px;
+}
+
+.tutorial-step-text span {
+  color: #777;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   TUTORIAL STAGE
+========================================================= */
+
+.tutorial-stage {
+  position: relative;
+  min-height: 430px;
+  padding: 55px 35px 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle, rgba(40, 44, 55, 0.1) 1px, transparent 1px), #f6f3eb;
+
+  background-size: 18px 18px;
+
+  border: 2px solid #252833;
+  border-radius: 20px;
+}
+
+/* =========================================================
+   STAGE HEADER
+========================================================= */
+
+.tutorial-stage-label {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  right: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+
+  color: #252833;
+}
+
+#tutorialSideLabel {
+  padding: 7px 12px;
+
+  background: #8ee7cf;
+
+  border: 2px solid #252833;
+  border-radius: 9px;
+
+  box-shadow: 3px 3px 0 #252833;
+
+  transform: rotate(-2deg);
+}
+
+#tutorialSheetLabel {
+  padding: 6px 10px;
+
+  background: #fff;
+
+  border: 2px dashed #252833;
+  border-radius: 8px;
+
+  transform: rotate(2deg);
+}
+
+/* =========================================================
+   PAPER
+========================================================= */
+
+.tutorial-paper {
+  position: relative;
+
+  width: min(760px, 94%);
+  aspect-ratio: 297 / 210;
+
+  background: #fffdf7;
+
+  border: 3px solid #252833;
+  border-radius: 4px;
+
+  box-shadow: 8px 9px 0 rgba(37, 40, 51, 0.18);
+
+  transform: rotate(-0.6deg);
+
+  overflow: visible;
+
+  transition: 0.25s;
+}
+
+/* =========================================================
+   PAPER CELLS
+========================================================= */
+
+.tutorial-cell {
+  position: absolute;
+
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(249, 247, 238, 0.95)
+  );
+
+  border: 1px solid rgba(37, 40, 51, 0.15);
+
+  z-index: 2;
+}
+
+/* =========================================================
+   PAGE NUMBER BADGE
+========================================================= */
+
+.tutorial-page-number {
+  position: relative;
+
+  width: clamp(38px, 6vw, 58px);
+  height: clamp(38px, 6vw, 58px);
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  border: 3px solid #252833;
+
+  color: #252833;
+
+  font-size: clamp(14px, 2.2vw, 25px);
+  font-weight: 950;
+
+  box-shadow: 4px 4px 0 #252833;
+
+  z-index: 20;
+
+  transform: rotate(var(--rotation));
+
+  transition: 0.2s;
+}
+
+.tutorial-page-number:hover {
+  transform: rotate(var(--rotation)) scale(1.12);
+}
+
+/* =========================================================
+   PAGE CORNER LABEL
+========================================================= */
+
+.tutorial-cell::before {
+  content: "PAGE";
+
+  position: absolute;
+
+  top: 7px;
+  left: 8px;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1px;
+
+  color: #a0a1a6;
+}
+
+/* =========================================================
+   CUT LINES
+========================================================= */
+
+.tutorial-cut-line {
+  position: absolute;
+
+  z-index: 15;
+
+  pointer-events: none;
+
+  border-color: #ef4f5f;
+
+  border-style: dashed;
+
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.8));
+}
+
+.tutorial-cut-vertical {
+  top: -2px;
+  bottom: -2px;
+
+  width: 0;
+
+  border-left: 3px dashed #ef4f5f;
+}
+
+.tutorial-cut-horizontal {
+  left: -2px;
+  right: -2px;
+
+  height: 0;
+
+  border-top: 3px dashed #ef4f5f;
+}
+
+/* =========================================================
+   FOLD LINES
+========================================================= */
+
+.tutorial-fold-line {
+  position: absolute;
+
+  z-index: 18;
+
+  pointer-events: none;
+
+  border-color: #2478dc;
+
+  border-style: dashed;
+
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.9));
+}
+
+.tutorial-fold-vertical {
+  top: -3px;
+  bottom: -3px;
+
+  width: 0;
+
+  border-left: 4px dashed #2478dc;
+}
+
+/* =========================================================
+   CUT / FOLD LEGENDS
+========================================================= */
+
+.cut-legend,
+.fold-legend {
+  position: absolute;
+
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 10px;
+
+  background: #fff;
+
+  border: 2px solid #252833;
+  border-radius: 9px;
+
+  font-size: 10px;
+  font-weight: 950;
+
+  box-shadow: 3px 3px 0 #252833;
+}
+
+.cut-legend {
+  left: 22px;
+  bottom: 20px;
+
+  color: #ef4f5f;
+
+  transform: rotate(-3deg);
+}
+
+.fold-legend {
+  right: 22px;
+  bottom: 20px;
+
+  color: #2478dc;
+
+  transform: rotate(3deg);
+}
+
+.legend-line {
+  width: 25px;
+  height: 0;
+}
+
+.cut-legend-line {
+  border-top: 3px dashed #ef4f5f;
+}
+
+.fold-legend-line {
+  border-top: 3px dashed #2478dc;
+}
+
+/* =========================================================
+   DOODLE ARROWS
+========================================================= */
+
+.doodle-arrow {
+  position: absolute;
+
+  z-index: 60;
+
+  color: #252833;
+
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+
+  font-weight: 900;
+
+  text-align: center;
+
+  pointer-events: none;
+}
+
+.doodle-arrow span {
+  display: inline-block;
+
+  padding: 6px 10px;
+
+  background: #ffe58f;
+
+  border: 2px solid #252833;
+  border-radius: 9px;
+
+  box-shadow: 3px 3px 0 #252833;
+
+  white-space: nowrap;
+}
+
+.doodle-arrow div {
+  font-size: 42px;
+  line-height: 36px;
+}
+
+.cut-arrow {
+  left: 4%;
+  top: 25%;
+
+  transform: rotate(-8deg);
+
+  color: #ef4f5f;
+}
+
+.fold-arrow {
+  right: 4%;
+  bottom: 29%;
+
+  transform: rotate(7deg);
+
+  color: #2478dc;
+}
+
+/* =========================================================
+   SHOW ARROWS
+========================================================= */
+
+.tutorial-stage.show-cut .cut-arrow,
+.tutorial-stage.show-fold .fold-arrow {
+  display: block;
+
+  animation: doodleFloat 1.5s ease-in-out infinite;
+}
+
+@keyframes doodleFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+
+  50% {
+    transform: translateY(-6px) rotate(3deg);
+  }
+}
+
+/* =========================================================
+   SHEET SELECTOR
+========================================================= */
+
+.tutorial-sheet-selector {
+  display: none;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.tutorial-sheet-selector.show {
+  display: flex;
+}
+
+.tutorial-sheet {
+  padding: 8px 18px;
+
+  border: 2px solid #252833;
+
+  border-radius: 10px;
+
+  background: white;
+
+  cursor: pointer;
+
+  font-weight: 800;
+
+  box-shadow: 2px 3px 0 #252833;
+}
+
+.tutorial-sheet.active {
+  background: #8ee7cf;
+
+  transform: translate(2px, 2px);
+
+  box-shadow: 0 1px 0 #252833;
+}
+
+/* =========================================================
+   INSTRUCTION CARDS
+========================================================= */
+
+.tutorial-instructions {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 12px;
+
+  margin-top: 20px;
+}
+
+.instruction-card {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  padding: 14px;
+
+  border: 2px solid #252833;
+
+  border-radius: 15px;
+
+  background: white;
+
+  box-shadow: 3px 4px 0 #252833;
+}
+
+.instruction-card:nth-child(1) {
+  transform: rotate(-1deg);
+}
+
+.instruction-card:nth-child(2) {
+  transform: rotate(0.7deg);
+}
+
+.instruction-card:nth-child(3) {
+  transform: rotate(-0.5deg);
+}
+
+.instruction-icon {
+  font-size: 27px;
+}
+
+.instruction-card strong {
+  display: block;
+
+  margin-bottom: 3px;
+}
+
+.instruction-card p {
+  margin: 0;
+
+  color: #6f737d;
+
+  font-size: 12px;
+
+  line-height: 1.4;
+}
+
+/* =========================================================
+   FINISHED BOOK
+========================================================= */
+
+.finished-doodle {
+  margin-top: 28px;
+
+  padding: 20px;
+
+  text-align: center;
+
+  background: #fff4cf;
+
+  border: 2px dashed #252833;
+
+  border-radius: 18px;
+}
+
+.finished-label {
+  font-size: 11px;
+  font-weight: 900;
+
+  letter-spacing: 1.5px;
+
+  margin-bottom: 15px;
+}
+
+.doodle-book {
+  position: relative;
+
+  width: 150px;
+  height: 110px;
+
+  margin: auto;
+
+  perspective: 500px;
+}
+
+.doodle-book-page {
+  position: absolute;
+
+  width: 105px;
+  height: 100px;
+
+  top: 4px;
+
+  border: 2px solid #252833;
+
+  border-radius: 4px 10px 10px 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  box-shadow: 3px 3px 0 #252833;
+}
+
+.doodle-book-page.back {
+  left: 34px;
+
+  background: #ff9d9d;
+
+  transform: rotate(8deg);
+}
+
+.doodle-book-page.inside {
+  left: 25px;
+
+  background: #fff;
+
+  transform: rotate(2deg);
+}
+
+.doodle-book-page.front {
+  left: 16px;
+
+  background: #8ee7cf;
+
+  transform: rotate(-5deg);
+
+  z-index: 3;
+}
+
+.doodle-staple {
+  position: absolute;
+
+  left: 12px;
+
+  width: 18px;
+  height: 7px;
+
+  border: 2px solid #252833;
+
+  border-radius: 5px;
+
+  background: #ddd;
+
+  z-index: 20;
+}
+
+.staple-a {
+  top: 34px;
+}
+
+.staple-b {
+  top: 65px;
+}
+
+.book-caption {
+  margin-top: 10px;
+
+  font-family: "Comic Sans MS", cursive;
+
+  font-weight: 700;
+
+  color: #555;
+}
+
+/* =========================================================
+   DONE BUTTON
+========================================================= */
+
+.tutorial-done-button {
+  display: block;
+
+  margin: 25px auto 0;
+
+  padding: 12px 25px;
+
+  border: 2px solid #252833;
+
+  border-radius: 12px;
+
+  background: #8ee7cf;
+
+  font-size: 14px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow: 3px 4px 0 #252833;
+
+  transition: 0.15s;
+}
+
+.tutorial-done-button:hover {
+  transform: translate(2px, 3px);
+
+  box-shadow: 1px 1px 0 #252833;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+  .tutorial-window {
+    padding: 20px;
+  }
+
+  .tutorial-header h2 {
+    font-size: 24px;
+  }
+
+  .tutorial-instructions {
+    grid-template-columns: 1fr;
+  }
+
+  .tutorial-stage {
+    min-height: 260px;
+    padding: 15px;
+  }
+
+  .tutorial-paper {
+    width: 96%;
+  }
+
+  .doodle-arrow {
+    transform: scale(0.75);
+  }
+
+  .tutorial-size-selector {
+    gap: 6px;
+  }
+
+  .tutorial-size {
+    min-height: 54px;
+  }
+}

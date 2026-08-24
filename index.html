@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>A7 Booklet Imposer</title>
+
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./tutorial.css" />
+  </head>
+
+  <body>
+    <main class="app">
+      <header class="header">
+        <div>
+          <h1>A7 Booklet Imposer</h1>
+          <p>Create print-ready A4 sheets for your A7 booklet.</p>
+        </div>
+      </header>
+
+      <section class="card">
+        <!-- Upload -->
+
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">📄</div>
+
+          <h2>Choose your PDF</h2>
+
+          <!-- <p>Select a PDF containing 4, 8, 16, or 32 pages.</p> -->
+          <p>
+            Upload any PDF, then choose the booklet size you want. Extra pages
+            will be added automatically if needed.
+          </p>
+
+          <label class="button primary" for="pdfInput"> Choose PDF </label>
+
+          <input type="file" id="pdfInput" accept="application/pdf" hidden />
+
+          <div class="file-name" id="fileName">No file selected</div>
+        </div>
+
+        <!-- Page count -->
+
+        <div class="page-count-section">
+          <label for="pageCount">Booklet size</label>
+
+          <select id="pageCount">
+            <option value="4">4 pages</option>
+            <option value="8">8 pages</option>
+            <option value="16" selected>16 pages</option>
+            <option value="32">32 pages</option>
+          </select>
+
+          <div id="32PageMode" class="thirty-two-mode hidden">
+            <div class="mode-title">32-page printing</div>
+
+            <div class="mode-options">
+              <label class="mode-option">
+                <input type="radio" name="32Mode" value="two" checked />
+
+                <span class="mode-card">
+                  <strong>2 A4 sheets</strong>
+                  <small>
+                    Standard 4×2 layout · easier cutting and folding
+                  </small>
+                </span>
+              </label>
+
+              <label class="mode-option">
+                <input type="radio" name="32Mode" value="one" />
+
+                <span class="mode-card">
+                  <strong>1 A4 sheet</strong>
+                  <small> All 32 pages on one A4 · 4×4 front + 4×4 back </small>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <p id="pageCountHelp">
+            A 16-page booklet uses one A4 sheet printed front and back.
+          </p>
+        </div>
+
+        <!-- Settings -->
+
+        <div class="settings">
+          <div class="setting">
+            <span class="setting-label"> Sheet </span>
+
+            <span class="setting-value" id="sheetSize"> A4 Landscape </span>
+          </div>
+
+          <div class="setting">
+            <span class="setting-label"> Mini page </span>
+
+            <span class="setting-value"> A7 </span>
+          </div>
+
+          <div class="setting">
+            <span class="setting-label"> Layout </span>
+
+            <span class="setting-value"> 4 × 2 </span>
+          </div>
+
+          <div class="setting">
+            <span class="setting-label"> Output sheets </span>
+
+            <span class="setting-value" id="outputSheets"> 1 </span>
+          </div>
+        </div>
+
+        <!-- Status -->
+
+        <div class="status hidden" id="status">
+          <div class="spinner"></div>
+
+          <span id="statusText"> Processing... </span>
+        </div>
+
+        <!-- Error -->
+
+        <div class="error hidden" id="error"></div>
+
+        <!-- Generate -->
+
+        <div id="ButtonGrp">
+          <button class="button generate" id="generateButton" disabled>
+            Generate Preview
+          </button>
+
+          <!-- BOOKLET TUTORIAL -->
+          <button id="tutorialButton" class="button tutorial-button">
+            ✨ How to Cut & Fold
+          </button>
+        </div>
+      </section>
+
+      <!-- Generated PDF -->
+
+      <section class="result-section hidden" id="resultSection">
+        <div class="result-header">
+          <div>
+            <h2>Generated booklet</h2>
+
+            <p id="resultDescription">
+              Review the page arrangement before downloading.
+            </p>
+          </div>
+
+          <button class="button download" id="downloadButton">
+            Download PDF
+          </button>
+        </div>
+
+        <!-- PDF preview -->
+
+        <div class="pdf-viewer" id="pdfViewer"></div>
+      </section>
+
+      <footer class="footer">
+        <p>All processing happens locally in your browser.</p>
+      </footer>
+    </main>
+
+    <!-- =========================================================
+     BOOKLET TUTORIAL OVERLAY
+========================================================= -->
+
+    <div id="tutorialOverlay" class="tutorial-overlay">
+      <div class="tutorial-window">
+        <button
+          id="closeTutorial"
+          class="tutorial-close"
+          aria-label="Close tutorial"
+        >
+          ×
+        </button>
+
+        <div class="tutorial-header">
+          <div class="tutorial-sparkle">✦</div>
+
+          <div>
+            <div class="tutorial-eyebrow">QUICK GUIDE</div>
+
+            <h2>Cut it. Fold it. 📖</h2>
+
+            <p>
+              Follow the little doodle guide and turn your A4 print into a
+              booklet.
+            </p>
+          </div>
+        </div>
+
+        <!-- BOOKLET SIZE -->
+
+        <div class="tutorial-size-selector">
+          <button class="tutorial-size active" data-tutorial-pages="4">
+            4
+            <small>pages</small>
+          </button>
+
+          <button class="tutorial-size" data-tutorial-pages="8">
+            8
+            <small>pages</small>
+          </button>
+
+          <button class="tutorial-size" data-tutorial-pages="16">
+            16
+            <small>pages</small>
+          </button>
+
+          <button class="tutorial-size" data-tutorial-pages="32">
+            32
+            <small>pages</small>
+          </button>
+        </div>
+
+        <!-- STEP -->
+
+        <div class="tutorial-step">
+          <div class="tutorial-step-number">1</div>
+
+          <div class="tutorial-step-text">
+            <strong id="tutorialStepTitle"> Look at your printed sheet </strong>
+
+            <span id="tutorialStepDescription">
+              This is how the pages are arranged before cutting.
+            </span>
+          </div>
+        </div>
+
+        <!-- VISUAL -->
+
+        <div class="tutorial-stage">
+          <div class="tutorial-stage-label">
+            <span id="tutorialSideLabel">FRONT</span>
+            <span id="tutorialSheetLabel">SHEET 1 OF 1</span>
+          </div>
+
+          <div class="paper-shadow"></div>
+
+          <div id="tutorialPaper" class="tutorial-paper"></div>
+
+          <div class="cut-legend">
+            <span class="legend-line cut-legend-line"></span>
+            CUT
+          </div>
+
+          <div class="fold-legend">
+            <span class="legend-line fold-legend-line"></span>
+            FOLD
+          </div>
+
+          <div id="cutArrow" class="doodle-arrow cut-arrow">
+            <span>✂ cut here</span>
+            <div>↓</div>
+          </div>
+
+          <div id="foldArrow" class="doodle-arrow fold-arrow">
+            <span>fold ✦</span>
+            <div>↔</div>
+          </div>
+        </div>
+
+        <!-- SHEET SWITCHER FOR 32 -->
+
+        <div id="tutorialSheetSelector" class="tutorial-sheet-selector">
+          <button class="tutorial-sheet active" data-sheet="1">Sheet 1</button>
+
+          <button class="tutorial-sheet" data-sheet="2">Sheet 2</button>
+        </div>
+
+        <!-- INSTRUCTIONS -->
+
+        <div class="tutorial-instructions">
+          <div class="instruction-card cut-card">
+            <div class="instruction-icon">✂️</div>
+
+            <div>
+              <strong>Cut</strong>
+              <p id="tutorialCutText">Cut along the red dashed lines.</p>
+            </div>
+          </div>
+
+          <div class="instruction-card fold-card">
+            <div class="instruction-icon">↪️</div>
+
+            <div>
+              <strong>Fold</strong>
+              <p id="tutorialFoldText">Fold each pair toward the center.</p>
+            </div>
+          </div>
+
+          <div class="instruction-card staple-card">
+            <div class="instruction-icon">📎</div>
+
+            <div>
+              <strong>Finish</strong>
+              <p id="tutorialFinishText">
+                Stack the pages and staple along the fold.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- MINI BOOK -->
+
+        <div class="finished-doodle">
+          <div class="finished-label">✨ YOUR FINISHED BOOKLET</div>
+
+          <div class="doodle-book">
+            <div class="doodle-book-page back">
+              <span>BACK</span>
+            </div>
+
+            <div class="doodle-book-page inside">
+              <span>INSIDE</span>
+            </div>
+
+            <div class="doodle-book-page front">
+              <span>FRONT</span>
+            </div>
+
+            <div class="doodle-staple staple-a"></div>
+            <div class="doodle-staple staple-b"></div>
+          </div>
+
+          <div class="book-caption">Fold → stack → staple → done! 🎉</div>
+        </div>
+
+        <button id="closeTutorialBottom" class="tutorial-done-button">
+          Got it! ✨
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="./tutorial.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
