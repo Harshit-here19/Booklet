@@ -713,3 +713,89 @@ select {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   CONVERTER IFRAME
+   ========================================================= */
+
+.converter-tool {
+  width: 100%;
+  padding: 0;
+}
+
+.converter-frame {
+  display: block;
+  width: 100%;
+  height: 1200px;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* ============================================================
+   MAIN TOOL TABS
+============================================================ */
+
+.tool-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding: 7px;
+  background: #eef2f7;
+  border: 1px solid #dce2e9;
+  border-radius: 14px;
+}
+
+.tool-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px 18px;
+
+  border: 2px solid transparent;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #475569;
+
+  cursor: pointer;
+  text-align: left;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.tool-tab:hover {
+  background: #fff;
+}
+
+.tool-tab.active {
+  background: #fff;
+  color: #0d9488;
+  border-color: #0d9488;
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+.tool-tab-icon {
+  font-size: 27px;
+  flex-shrink: 0;
+}
+
+.tool-tab strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 3px;
+}
+
+.tool-tab small {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.4;
+}

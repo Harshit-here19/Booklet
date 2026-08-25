@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>PDF ↔ Images — Offline Converter</title>
+
+    <link rel="stylesheet" href="./converter.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <h1>PDF ↔ Images</h1>
+
+        <p class="subtitle">
+          Convert PDFs to images and images to PDF directly in your browser.
+        </p>
+
+        <div class="privacy">
+          🔒 <strong>Your files stay on your device.</strong>
+          <span>No files are uploaded to a server.</span>
+        </div>
+      </header>
+
+      <!-- MODE TABS -->
+
+      <div class="tabs">
+        <button class="tab active" id="pdfToImagesTab">PDF → Images</button>
+
+        <button class="tab" id="imagesToPdfTab">Images → PDF</button>
+      </div>
+
+      <!-- ========================================= -->
+      <!-- PDF TO IMAGES -->
+      <!-- ========================================= -->
+
+      <section id="pdfToImagesSection">
+        <div class="upload-box pdf-drop-zone" id="pdfDropZone">
+          <div class="upload-icon">📄</div>
+
+          <h2>Select a PDF</h2>
+
+          <p>Choose a PDF file from your device or drag it here.</p>
+
+          <input type="file" id="pdfFile" accept="application/pdf" />
+
+          <label for="pdfFile" class="file-button">Choose PDF</label>
+
+          <div id="pdfFileName" class="file-name">No PDF selected</div>
+        </div>
+
+        <div class="settings">
+          <label>
+            Image Quality
+
+            <select id="scale">
+              <option value="1">Normal</option>
+
+              <option value="1.5">High</option>
+
+              <option value="2" selected>Very High</option>
+
+              <option value="3">Ultra High</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="convertBtn" class="primary" disabled>Convert PDF</button>
+
+          <button id="clearBtn" class="secondary">Clear</button>
+        </div>
+
+        <progress id="progress" value="0" max="100"></progress>
+
+        <div id="status">Select a PDF to begin.</div>
+
+        <div id="output"></div>
+      </section>
+
+      <!-- ========================================= -->
+      <!-- IMAGES TO PDF -->
+      <!-- ========================================= -->
+
+      <section id="imagesToPdfSection" class="hidden">
+        <div class="upload-box image-drop-zone" id="imageDropZone">
+          <div class="upload-icon">🖼️</div>
+
+          <h2>Drop Images Here</h2>
+
+          <p>
+            Drag and drop your images here, or choose files from your device.
+          </p>
+
+          <input
+            type="file"
+            id="imageFiles"
+            accept="image/png,image/jpeg,image/webp"
+            multiple
+          />
+
+          <label for="imageFiles" class="file-button"> Choose Images </label>
+
+          <div id="imageFileName" class="file-name">No images selected</div>
+        </div>
+
+        <!-- IMAGE PDF SETTINGS -->
+
+        <div class="pdf-settings">
+          <div class="setting">
+            <label for="pageSize"> Page Size </label>
+
+            <select id="pageSize">
+              <option value="a4" selected>A4</option>
+
+              <option value="letter">Letter</option>
+
+              <option value="original">Original Image Size</option>
+            </select>
+          </div>
+
+          <div class="setting">
+            <label for="orientation"> Orientation </label>
+
+            <select id="orientation">
+              <option value="auto" selected>Auto</option>
+
+              <option value="portrait">Portrait</option>
+
+              <option value="landscape">Landscape</option>
+            </select>
+          </div>
+
+          <div class="setting">
+            <label for="margin"> Margin </label>
+
+            <select id="margin">
+              <option value="0">0 mm</option>
+
+              <option value="5">5 mm</option>
+
+              <option value="10" selected>10 mm</option>
+
+              <option value="15">15 mm</option>
+
+              <option value="20">20 mm</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- IMAGE PREVIEWS -->
+
+        <div class="image-list-header">
+          <h2>
+            Images
+            <span id="imageCount">0</span>
+          </h2>
+
+          <p>Drag images to change their order.</p>
+        </div>
+
+        <div id="imageList" class="image-list">
+          <div class="empty-images">No images selected.</div>
+        </div>
+
+        <div class="actions">
+          <button id="createPdfBtn" class="primary" disabled>Create PDF</button>
+
+          <button id="clearImagesBtn" class="secondary">Clear</button>
+        </div>
+
+        <div id="imagePdfStatus" class="status">Select images to begin.</div>
+      </section>
+    </div>
+
+    <!-- jsPDF -->
+    <script src="./lib/jspdf.umd.min.js"></script>
+
+    <!-- Application -->
+    <script type="module" src="./converter.js"></script>
+  </body>
+</html>
