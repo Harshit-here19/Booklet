@@ -1135,3 +1135,19 @@ function setBusy(busy, message = "") {
     status.classList.add("hidden");
   }
 }
+
+const converterFrame = document.getElementById("converterFrame");
+
+window.addEventListener("message", (event) => {
+  if (event.data?.type !== "converter-height") {
+    return;
+  }
+
+  const height = Number(event.data.height);
+
+  if (!Number.isFinite(height) || height <= 0) {
+    return;
+  }
+
+  converterFrame.style.height = `${height}px`;
+});
