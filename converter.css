@@ -344,7 +344,8 @@ button {
 }
 
 .primary,
-.secondary {
+.secondary,
+.amber {
   border: none;
 
   padding: 11px 18px;
@@ -391,6 +392,14 @@ button {
   background: #dfe3e7;
 
   transform: translateY(-1px);
+}
+
+.amber {
+  background-color: #f59e0b;
+}
+
+.amber:hover {
+  background: #d97706;
 }
 
 button:disabled {
@@ -1912,7 +1921,8 @@ button:disabled {
   }
 
   .primary,
-  .secondary {
+  .secondary,
+  .amber {
     width: 100%;
   }
 

@@ -68,6 +68,14 @@
           <button id="convertBtn" class="primary" disabled>Convert PDF</button>
 
           <button id="clearBtn" class="secondary">Clear</button>
+
+          <button id="downloadAllImagesBtn" class="amber" disabled>
+            ↓ Download All Images
+          </button>
+
+          <button id="downloadAllImagesSingleBtn" class="amber" disabled>
+            ↓ Individual Images
+          </button>
         </div>
 
         <div class="conversion-progress">
@@ -299,9 +307,8 @@
       </div>
     </div>
 
-    <!-- jsPDF -->
-
     <script src="./lib/jspdf.umd.min.js"></script>
+    <script src="./lib/jszip.min.js"></script>
 
     <!-- Application -->
 

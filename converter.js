@@ -48,6 +48,10 @@ const progressPercent = document.getElementById("progressPercent");
 const status = document.getElementById("status");
 
 const output = document.getElementById("output");
+const downloadAllImagesBtn = document.getElementById("downloadAllImagesBtn");
+const downloadAllImagesSingleBtn = document.getElementById(
+  "downloadAllImagesSingleBtn",
+);
 
 // ============================================================
 // IMAGES → PDF
@@ -70,12 +74,10 @@ const imageProgressBar = document.getElementById("imageProgressBar");
 const imageProgressLabel = document.getElementById("imageProgressLabel");
 const imageProgressPercent = document.getElementById("imageProgressPercent");
 const imageProgressStatus = document.getElementById("imageProgressStatus");
-
 const pageSize = document.getElementById("pageSize");
-
 const orientation = document.getElementById("orientation");
-
 const margin = document.getElementById("margin");
+
 
 // ============================================================
 // PDF PREVIEW
@@ -116,6 +118,7 @@ let draggedIndex = null;
 // Currently edited crop
 
 let cropEditorIndex = null;
+let extractedPdfImages = [];
 
 // ============================================================
 // SUPPORTED IMAGE TYPES
@@ -252,6 +255,10 @@ async function convertPdfToImages() {
 
   output.innerHTML = "";
 
+  extractedPdfImages = [];
+  downloadAllImagesBtn.disabled = true;
+  downloadAllImagesSingleBtn.disabled = true;
+
   updateProgress(0, "Reading PDF...");
 
   try {
@@ -309,6 +316,11 @@ async function convertPdfToImages() {
 
       const imageURL = canvas.toDataURL("image/png");
 
+      extractedPdfImages.push({
+        pageNumber,
+        imageURL,
+      });
+
       createPdfImageCard(pageNumber, imageURL, totalPages);
 
       const percentAfter = (pageNumber / totalPages) * 100;
@@ -324,6 +336,9 @@ async function convertPdfToImages() {
     }
 
     updateProgress(100, "Conversion complete");
+
+    downloadAllImagesBtn.disabled = extractedPdfImages.length === 0;
+    downloadAllImagesSingleBtn.disabled = extractedPdfImages.length === 0;
 
     status.innerHTML = `
       <span class="success-status">
@@ -443,6 +458,160 @@ function createPdfImageCard(pageNumber, imageURL, totalPages) {
 }
 
 // ============================================================
+// DOWNLOAD ALL EXTRACTED IMAGES AS ZIP
+// ============================================================
+
+downloadAllImagesBtn.addEventListener("click", downloadAllPdfImagesAsZip);
+
+downloadAllImagesSingleBtn.addEventListener("click", downloadAllPdfImages);
+
+async function downloadAllPdfImagesAsZip() {
+  if (extractedPdfImages.length === 0) {
+    return;
+  }
+
+  downloadAllImagesBtn.disabled = true;
+
+  try {
+    const zip = new JSZip();
+
+    const total = extractedPdfImages.length;
+
+    status.textContent = "Preparing ZIP...";
+
+    for (let i = 0; i < total; i++) {
+      const imageData = extractedPdfImages[i];
+
+      const base64 = imageData.imageURL.split(",")[1];
+
+      zip.file(
+        `page-${String(imageData.pageNumber).padStart(3, "0")}.png`,
+        base64,
+        {
+          base64: true,
+        },
+      );
+
+      const percent = ((i + 1) / total) * 100;
+
+      updateProgress(percent, `Preparing image ${i + 1} of ${total}`);
+
+      status.textContent = `Adding page ${imageData.pageNumber} of ${total} to ZIP...`;
+
+      // Keep UI responsive.
+      await sleep(10);
+    }
+
+    updateProgress(100, "Creating ZIP...");
+
+    status.textContent = "Creating ZIP file...";
+
+    const zipBlob = await zip.generateAsync(
+      {
+        type: "blob",
+        compression: "STORE",
+      },
+      (metadata) => {
+        updateProgress(
+          metadata.percent,
+          `Creating ZIP... ${Math.round(metadata.percent)}%`,
+        );
+      },
+    );
+
+    const url = URL.createObjectURL(zipBlob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+
+    link.download = "pdf-images.zip";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+
+    status.innerHTML = `
+      <span class="success-status">
+        <span class="success-icon">✓</span>
+        ${total} images downloaded as ZIP
+      </span>
+    `;
+  } catch (error) {
+    console.error(error);
+
+    status.innerHTML = `
+      <span class="error-status">
+        ❌ Error creating ZIP: ${error.message}
+      </span>
+    `;
+  } finally {
+    downloadAllImagesBtn.disabled = false;
+  }
+}
+
+async function downloadAllPdfImages() {
+  if (extractedPdfImages.length === 0) {
+    return;
+  }
+
+  downloadAllImagesSingleBtn.disabled = true;
+
+  try {
+    status.textContent = `Preparing ${extractedPdfImages.length} images...`;
+
+    for (let i = 0; i < extractedPdfImages.length; i++) {
+      const imageData = extractedPdfImages[i];
+
+      const link = document.createElement("a");
+
+      link.href = imageData.imageURL;
+
+      link.download = `page-${String(imageData.pageNumber).padStart(
+        3,
+        "0",
+      )}.png`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+
+      status.textContent =
+        `Downloaded page ${imageData.pageNumber} of ` +
+        `${extractedPdfImages.length}`;
+
+      // Give the browser time to process each download.
+      await sleep(150);
+    }
+
+    status.innerHTML = `
+      <span class="success-status">
+        <span class="success-icon">✓</span>
+        All ${extractedPdfImages.length} images downloaded successfully
+      </span>
+    `;
+  } catch (error) {
+    console.error(error);
+
+    status.innerHTML = `
+      <span class="error-status">
+        ❌ Error downloading images: ${error.message}
+      </span>
+    `;
+  } finally {
+    downloadAllImagesSingleBtn.disabled = false;
+  }
+}
+
+// ============================================================
 // CLEAR PDF → IMAGES
 // ============================================================
 
@@ -452,6 +621,10 @@ clearBtn.addEventListener("click", () => {
   selectedPdf = null;
 
   output.innerHTML = "";
+
+  extractedPdfImages = [];
+  downloadAllImagesBtn.disabled = true;
+  downloadAllImagesSingleBtn.disabled = true;
 
   updateProgress(0, "Ready to convert");
 
@@ -487,7 +660,21 @@ function addImagesToSelection(files, source = "selected") {
     return;
   }
 
-  const newImages = validImages.map((file) => ({
+  // ============================================================
+  // SORT MULTIPLE FILES ALPHABETICALLY
+  // ============================================================
+
+  const filesToAdd =
+    source === "pasted"
+      ? validImages
+      : [...validImages].sort((a, b) =>
+          a.name.localeCompare(b.name, undefined, {
+            numeric: true,
+            sensitivity: "base",
+          }),
+        );
+
+  const newImages = filesToAdd.map((file) => ({
     file: file,
 
     rotation: 0,
@@ -509,9 +696,11 @@ function addImagesToSelection(files, source = "selected") {
   if (source === "pasted") {
     imagePdfStatus.textContent = `${validImages.length} pasted image(s) added.`;
   } else if (source === "dropped") {
-    imagePdfStatus.textContent = `${validImages.length} image(s) added. Drag to arrange their order.`;
+    imagePdfStatus.textContent =
+      `${validImages.length} image(s) added alphabetically. ` +
+      `Drag to arrange their order.`;
   } else {
-    imagePdfStatus.textContent = `${selectedImages.length} image(s) selected.`;
+    imagePdfStatus.textContent = `${selectedImages.length} image(s) selected alphabetically.`;
   }
 }
 
@@ -1627,6 +1816,7 @@ async function createPdfFromImages() {
           orientation: dimensions.orientation,
           unit: "mm",
           format: dimensions.format,
+          compress: true,
         });
       } else {
         pdf.addPage(dimensions.format, dimensions.orientation);
@@ -1716,34 +1906,36 @@ function calculatePageDimensions(image) {
   // ==========================================================
 
   if (selectedPageSize === "original") {
-    const mmPerPixel = 25.4 / 96;
+    // Keep the image's aspect ratio,
+    // but use A4 as the physical PDF page.
+    //
+    // This prevents a 6000px image from creating
+    // a gigantic 1+ meter PDF page.
 
-    const width = effectiveWidth * mmPerPixel;
-
-    const height = effectiveHeight * mmPerPixel;
+    let width = 210;
+    let height = 297;
 
     let finalOrientation;
 
     if (selectedOrientation === "auto") {
-      finalOrientation = width > height ? "landscape" : "portrait";
+      finalOrientation =
+        effectiveWidth > effectiveHeight ? "landscape" : "portrait";
     } else {
       finalOrientation = selectedOrientation;
     }
 
+    if (finalOrientation === "landscape") {
+      [width, height] = [height, width];
+    }
+
     return {
-      format: [width, height],
+      format: "a4",
 
       orientation: finalOrientation,
 
-      pageWidth:
-        finalOrientation === "landscape"
-          ? Math.max(width, height)
-          : Math.min(width, height),
+      pageWidth: width,
 
-      pageHeight:
-        finalOrientation === "landscape"
-          ? Math.min(width, height)
-          : Math.max(width, height),
+      pageHeight: height,
     };
   }
 
@@ -1825,63 +2017,64 @@ function calculatePageDimensions(image) {
 }
 
 // ============================================================
-// ADD IMAGE TO PDF PAGE
+// ADD OPTIMIZED IMAGE TO PDF PAGE
 // ============================================================
 
 async function addImageToPage(pdf, image, dimensions) {
   const marginValue = parseFloat(margin.value) || 0;
 
   const pageWidth = dimensions.pageWidth;
-
   const pageHeight = dimensions.pageHeight;
 
   const availableWidth = pageWidth - marginValue * 2;
-
   const availableHeight = pageHeight - marginValue * 2;
 
   const rotation = image.rotation || 0;
 
   // ==========================================================
-  // APPLY CROP + ROTATION
+  // CREATE RESIZED + CROPPED JPEG
   // ==========================================================
 
-  const processedImage = await createProcessedImage(image, rotation);
+  const processedImage = await createProcessedImage(
+    image,
+    rotation,
+    availableWidth,
+    availableHeight,
+  );
 
   const imageWidth = processedImage.width;
-
   const imageHeight = processedImage.height;
 
   const imageRatio = imageWidth / imageHeight;
-
   const pageRatio = availableWidth / availableHeight;
 
   let width;
-
   let height;
 
   if (imageRatio > pageRatio) {
     width = availableWidth;
-
     height = width / imageRatio;
   } else {
     height = availableHeight;
-
     width = height * imageRatio;
   }
 
   const x = (pageWidth - width) / 2;
-
   const y = (pageHeight - height) / 2;
+
+  // ==========================================================
+  // JPEG = MUCH SMALLER THAN PNG FOR PHOTOS
+  // ==========================================================
 
   pdf.addImage(
     processedImage.dataURL,
-    "PNG",
+    "JPEG",
     x,
     y,
     width,
     height,
     undefined,
-    "FAST",
+    "MEDIUM",
   );
 }
 
@@ -1889,7 +2082,11 @@ async function addImageToPage(pdf, image, dimensions) {
 // CREATE PROCESSED IMAGE
 // ============================================================
 
-function createProcessedImage(image, rotation) {
+// ============================================================
+// CREATE OPTIMIZED IMAGE
+// ============================================================
+
+function createProcessedImage(image, rotation, pageWidthMM, pageHeightMM) {
   return new Promise((resolve, reject) => {
     const sourceImage = new Image();
 
@@ -1902,59 +2099,138 @@ function createProcessedImage(image, rotation) {
           height: 1,
         };
 
-        // ==================================================
-        // CROP COORDINATES
-        // ==================================================
+        // ======================================================
+        // ORIGINAL CROP
+        // ======================================================
 
         const sx = Math.round(crop.x * sourceImage.naturalWidth);
 
         const sy = Math.round(crop.y * sourceImage.naturalHeight);
 
-        const sw = Math.round(crop.width * sourceImage.naturalWidth);
+        const sw = Math.max(
+          1,
+          Math.round(crop.width * sourceImage.naturalWidth),
+        );
 
-        const sh = Math.round(crop.height * sourceImage.naturalHeight);
+        const sh = Math.max(
+          1,
+          Math.round(crop.height * sourceImage.naturalHeight),
+        );
 
-        const isSideways = rotation === 90 || rotation === 270;
+        // ======================================================
+        // TARGET DPI
+        //
+        // 150 DPI gives a very good balance between:
+        // quality + PDF size.
+        // ======================================================
+
+        const DPI = 150;
+
+        const mmToPixels = DPI / 25.4;
+
+        let targetWidth = Math.round(pageWidthMM * mmToPixels);
+
+        let targetHeight = Math.round(pageHeightMM * mmToPixels);
+
+        // ======================================================
+        // ACCOUNT FOR ROTATION
+        // ======================================================
+
+        const sideways = rotation === 90 || rotation === 270;
+
+        const rotatedWidth = sideways ? sh : sw;
+        const rotatedHeight = sideways ? sw : sh;
+
+        // ======================================================
+        // DON'T UPSCALE SMALL IMAGES
+        // ======================================================
+
+        const imageRatio = rotatedWidth / rotatedHeight;
+
+        const pageRatio = targetWidth / targetHeight;
+
+        if (imageRatio > pageRatio) {
+          targetWidth = Math.min(targetWidth, rotatedWidth);
+
+          targetHeight = Math.round(targetWidth / imageRatio);
+        } else {
+          targetHeight = Math.min(targetHeight, rotatedHeight);
+
+          targetWidth = Math.round(targetHeight * imageRatio);
+        }
+
+        targetWidth = Math.max(1, targetWidth);
+        targetHeight = Math.max(1, targetHeight);
+
+        // ======================================================
+        // CREATE SMALL CANVAS
+        // ======================================================
 
         const canvas = document.createElement("canvas");
 
-        if (isSideways) {
-          canvas.width = sh;
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
 
-          canvas.height = sw;
-        } else {
-          canvas.width = sw;
+        const context = canvas.getContext("2d", {
+          alpha: false,
+        });
 
-          canvas.height = sh;
-        }
+        // White background.
+        // This also prevents PNG-style transparency
+        // from increasing the output size.
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
 
-        const context = canvas.getContext("2d");
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = "high";
+
+        // ======================================================
+        // ROTATION
+        // ======================================================
+
+        context.save();
 
         context.translate(canvas.width / 2, canvas.height / 2);
 
         context.rotate((rotation * Math.PI) / 180);
 
+        // ======================================================
+        // DRAW CROPPED IMAGE
+        // ======================================================
+
+        const drawWidth = sideways ? targetHeight : targetWidth;
+
+        const drawHeight = sideways ? targetWidth : targetHeight;
+
         context.drawImage(
           sourceImage,
-
           sx,
           sy,
           sw,
           sh,
-
-          -sw / 2,
-          -sh / 2,
-          sw,
-          sh,
+          -drawWidth / 2,
+          -drawHeight / 2,
+          drawWidth,
+          drawHeight,
         );
 
-        const dataURL = canvas.toDataURL("image/png");
+        context.restore();
+
+        // ======================================================
+        // JPEG QUALITY
+        //
+        // 0.82 is a good starting point.
+        //
+        // 0.75 = smaller
+        // 0.82 = balanced
+        // 0.90 = higher quality
+        // ======================================================
+
+        const dataURL = canvas.toDataURL("image/jpeg", 0.82);
 
         resolve({
           dataURL,
-
           width: canvas.width,
-
           height: canvas.height,
         });
       } catch (error) {
